@@ -1,0 +1,6 @@
+*.code-workspace
+.env
+.vscode
+db.sqlite3
+*.pyc
+.idea
