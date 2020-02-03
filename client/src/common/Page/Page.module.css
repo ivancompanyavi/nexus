@@ -1,0 +1,20 @@
+.page {
+  grid-area: page-content;
+  opacity: 0;
+  display: grid;
+  height: 100vh;
+  width: 100vw;
+  grid-template-areas:
+    'page-title'
+    'page-menu'
+    'page-content';
+  grid-template-rows: 50px 50px 1fr;
+}
+
+.title {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-black);
+}

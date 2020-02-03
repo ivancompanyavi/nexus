@@ -1,10 +1,15 @@
 import React from 'react'
 import { ApolloProvider } from '@apollo/react-hooks'
-import { Router, Route } from 'react-router'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { createBrowserHistory } from 'history'
+import { AnimatePresence } from 'framer-motion'
+
+import { Menu } from './common'
+import { Blog, Gaming, Main } from './pages'
 
 import client from './client'
-import Gaming from './gaming'
+
+import './App.css'
 
 const customHistory = createBrowserHistory()
 
@@ -12,7 +17,14 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <Router history={customHistory}>
-        <Route path="/gaming" component={Gaming} />
+        <Menu />
+        <AnimatePresence exitBeforeEnter>
+          <Switch>
+            <Route exact path="/" component={Main} />
+            <Route path="/gaming" component={Gaming} />
+            <Route path="/blog" component={Blog} />) }} >
+          </Switch>
+        </AnimatePresence>
       </Router>
     </ApolloProvider>
   )
