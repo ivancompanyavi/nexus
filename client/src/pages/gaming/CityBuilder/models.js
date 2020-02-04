@@ -7,22 +7,23 @@ export class IsoMap {
     this.tile = tile
     this.color = color
     this.canvas = null
-    this.context = null
+    this.ctx = null
     this.position = {}
   }
   create() {
     this.position = { x: this.screen.width / 2, y: this.tile.height }
     this.canvas = document.getElementById(this.elementId)
-    this.context = this.canvas.getContext('2d')
+    this.ctx = this.canvas.getContext('2d')
 
     this.canvas.setAttribute('width', this.screen.width)
     this.canvas.setAttribute('height', this.screen.height)
 
+    let x, y
     for (let i = 0; i < this.map.width; i++) {
       for (let j = 0; j < this.map.height; j++) {
         // calculate coordinates
-        var x = ((i - j) * this.tile.width) / 2 + this.position.x
-        var y = ((i + j) * this.tile.height) / 2 + this.position.y
+        x = ((i - j) * this.tile.width) / 2 + this.position.x
+        y = ((i + j) * this.tile.height) / 2 + this.position.y
         // draw single tile
         this.drawTile(x, y)
       }
@@ -36,10 +37,10 @@ export class IsoMap {
     var tileHeight = this.tile.height
 
     // begin
-    this.context.beginPath()
+    this.ctx.beginPath()
 
     // move to start point
-    this.context.moveTo(x - tileWidth / 2, y)
+    this.ctx.moveTo(x - tileWidth / 2, y)
 
     /**
      * create four lines
@@ -50,17 +51,17 @@ export class IsoMap {
      *            |  \       |  \/      |  \/
      * --------------------------------------------
      */
-    this.context.lineTo(x - tileWidth, y + tileHeight / 2)
-    this.context.lineTo(x - tileWidth / 2, y + tileHeight)
-    this.context.lineTo(x, y + tileHeight / 2)
-    this.context.lineTo(x - tileWidth / 2, y)
+    this.ctx.lineTo(x - tileWidth, y + tileHeight / 2)
+    this.ctx.lineTo(x - tileWidth / 2, y + tileHeight)
+    this.ctx.lineTo(x, y + tileHeight / 2)
+    this.ctx.lineTo(x - tileWidth / 2, y)
 
     // draw path
-    this.context.stroke()
+    this.ctx.stroke()
 
     // fill tile
-    this.context.fillStyle = this.color
-    this.context.fill()
+    this.ctx.fillStyle = this.color
+    this.ctx.fill()
   }
 
   addListeners() {
@@ -74,7 +75,7 @@ export class IsoMap {
         )
 
         if (this.isOnMap(isometricPosition, this.map)) {
-          this.drawHotel(isometricPosition)
+          this.drawBuilding(isometricPosition, 3, 1, 5)
         }
       },
       false
@@ -121,72 +122,82 @@ export class IsoMap {
     }
   }
 
-  drawHotel(isometricPosition) {
-    const { x, y } = this.convertIsometricToScreen(
+  drawBuilding(isometricPosition, x, y, z) {
+    const point = this.convertIsometricToScreen(
       isometricPosition.x,
       isometricPosition.y
     )
-    const { width, height } = this.tile
-    const hotelWidth = 3
-    const hotelHeight = 1
-    const hotelTall = 3
+    this.drawCube(point, x, y, z)
+  }
 
-    // left
-    this.context.beginPath()
-    this.context.moveTo(x - width / 2, y + height)
-    this.context.lineTo(x - width / 2, y + height - height * hotelTall)
-    this.context.lineTo(
-      x - width / 2 - (width * hotelHeight) / 2,
-      y + height - (hotelHeight * height) / 2 - height * hotelTall
-    )
-    this.context.lineTo(
-      x - width / 2 - (width * hotelHeight) / 2,
-      y + height - (hotelHeight * height) / 2
-    )
+  drawCube(point, x, y, z) {
+    this.drawRect(point, x, y, 'x', 'red')
+    this.drawRect(point, z, y, 'y', 'blue')
+    const topSidePoint = {
+      x: point.x,
+      y: point.y - y * this.tile.height,
+    }
+    this.drawRect(topSidePoint, z, x, 'z', 'green')
+  }
 
-    this.context.stroke()
+  drawRect(point, w, h, axis, color) {
+    const { x, y } = point
+    let p1, p2, p3, p4
+    const { width: tWidth, height: tHeight } = this.tile
+    let isoWidth, isoHeight
+    if (axis === 'x') {
+      isoWidth = tWidth / 2
+      isoHeight = tHeight
+      p1 = { x: x - isoWidth, y: y + isoHeight }
+      p2 = { x: x - isoWidth, y: y + isoHeight - isoHeight * h }
+      p3 = {
+        x: x - isoWidth + isoWidth * w,
+        y: y + isoHeight - isoHeight * h - (isoHeight * w) / 2,
+      }
+      p4 = {
+        x: x - isoWidth + isoWidth * w,
+        y: y + isoHeight - (isoHeight * w) / 2,
+      }
+    } else if (axis === 'y') {
+      isoWidth = tWidth / 2
+      isoHeight = tHeight
+      p1 = { x: x - isoWidth, y: y + isoHeight }
+      p2 = { x: x - isoWidth, y: y + isoHeight - isoHeight * h }
+      p3 = {
+        x: x - isoWidth + isoWidth * w * -1,
+        y: y + isoHeight - isoHeight * h - (isoHeight * w) / 2,
+      }
+      p4 = {
+        x: x - isoWidth + isoWidth * w * -1,
+        y: y + isoHeight - (isoHeight * w) / 2,
+      }
+    } else {
+      isoWidth = tWidth
+      isoHeight = tHeight
+      p1 = { x: x - isoWidth / 2, y: y + isoHeight }
+      p2 = {
+        x: x - isoWidth / 2 - (isoWidth * w) / 2,
+        y: y + isoHeight - (isoHeight * w) / 2,
+      }
+      p3 = {
+        x: x - isoWidth / 2 - (isoWidth * w) / 2 + (isoWidth * h) / 2,
+        y: y + isoHeight - (isoHeight * h) / 2 - (isoHeight * w) / 2,
+      }
+      p4 = {
+        x: x - isoWidth / 2 + (isoWidth * h) / 2,
+        y: y + isoHeight - (isoHeight * h) / 2,
+      }
+    }
 
-    this.context.fillStyle = 'black'
-    this.context.fill()
+    this.ctx.beginPath()
+    this.ctx.moveTo(p1.x, p1.y)
+    this.ctx.lineTo(p2.x, p2.y)
+    this.ctx.lineTo(p3.x, p3.y)
+    this.ctx.lineTo(p4.x, p4.y)
 
-    // front
-    this.context.beginPath()
-    this.context.moveTo(x - width / 2, y + height)
-    this.context.lineTo(x - width / 2, y + height - height * hotelTall)
-    this.context.lineTo(
-      x - width / 2 + (width * hotelWidth) / 2,
-      y + height - height * hotelTall - (height * hotelTall) / 2
-    )
-    this.context.lineTo(
-      x - width / 2 + (width * hotelWidth) / 2,
-      y + height - (height * hotelTall) / 2
-    )
+    this.ctx.stroke()
 
-    this.context.stroke()
-
-    this.context.fillStyle = 'red'
-    this.context.fill()
-
-    // top
-
-    this.context.beginPath()
-    this.context.moveTo(x - width / 2, y + height - height * hotelTall)
-    this.context.lineTo(
-      x - width / 2 - (width * hotelHeight) / 2,
-      y + height - height * hotelTall - (height * hotelHeight) / 2
-    )
-    this.context.lineTo(
-      x - width / 2 - (width * hotelHeight) / 2 + (width * hotelWidth) / 2,
-      y + height / 2 - height * hotelTall - (height * hotelWidth) / 2
-    )
-    this.context.lineTo(
-      x - width / 2 + (width * hotelWidth) / 2,
-      y + height - height * hotelTall - (height * hotelWidth) / 2
-    )
-
-    this.context.stroke()
-
-    this.context.fillStyle = 'blue'
-    this.context.fill()
+    this.ctx.fillStyle = color
+    this.ctx.fill()
   }
 }
