@@ -1,18 +1,17 @@
-import React, { useEffect } from 'react'
+import React, { useState } from 'react'
 
-import { IsoMap } from './models'
+import Map from './Map'
+import BuildingSelector from './BuildingSelector'
 
-const params = {
-  elementId: 'canvas',
-  screen: { width: 1024, height: 768 },
-  map: { width: 14, height: 14 },
-  tile: { width: 64, height: 32 },
-}
+import styles from './CityBuilder.module.css'
 
 export default () => {
-  useEffect(() => {
-    const isoMap = new IsoMap(params)
-    isoMap.create()
-  }, [])
-  return <canvas id="canvas" />
+  const [selectedBuilding, setSelectedBuilding] = useState(null)
+
+  return (
+    <article className={styles.cityBuilder}>
+      <Map selectedBuilding={selectedBuilding} />
+      <BuildingSelector onBuildingSelect={b => setSelectedBuilding(b)} />
+    </article>
+  )
 }

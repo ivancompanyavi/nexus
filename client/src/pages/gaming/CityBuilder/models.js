@@ -1,6 +1,5 @@
 export class IsoMap {
   constructor({ elementId, screen, map, tile, color = '#15B89A' }) {
-    console.log(screen)
     this.elementId = elementId
     this.screen = screen
     this.map = map
@@ -11,7 +10,7 @@ export class IsoMap {
     this.position = {}
   }
   create() {
-    this.position = { x: this.screen.width / 2, y: this.tile.height }
+    this.position = { x: this.screen.width / 2, y: this.tile.height * 3 }
     this.canvas = document.getElementById(this.elementId)
     this.ctx = this.canvas.getContext('2d')
 
@@ -28,8 +27,25 @@ export class IsoMap {
         this.drawTile(x, y)
       }
     }
+  }
 
-    this.addListeners()
+  selectBuilding(b) {
+    if (this.buildingListener) {
+      this.canvas.removeEventListener('mousedown', this.buildingListener)
+    }
+    this.buildingListener = event => {
+      var mousePosition = this.getMousePosition(event)
+      var isometricPosition = this.convertScreenToIsometric(
+        mousePosition.x,
+        mousePosition.y
+      )
+
+      if (this.isOnMap(isometricPosition, this.map)) {
+        const { x, y, z } = b
+        this.drawBuilding(isometricPosition, x, y, z)
+      }
+    }
+    this.canvas.addEventListener('mousedown', this.buildingListener, false)
   }
 
   drawTile(x, y) {
@@ -75,7 +91,8 @@ export class IsoMap {
         )
 
         if (this.isOnMap(isometricPosition, this.map)) {
-          this.drawBuilding(isometricPosition, 3, 1, 5)
+          const { x, y, z } = this.selectedBuilding
+          this.drawBuilding(isometricPosition, x, y, z)
         }
       },
       false
@@ -86,22 +103,22 @@ export class IsoMap {
     x = (x - this.position.x) / this.tile.width
     y = (y - this.position.y) / this.tile.height
 
-    var isoX = Math.floor(y + x)
-    var isoY = Math.floor(y - x)
+    const isoX = Math.floor(y + x)
+    const isoY = Math.floor(y - x)
 
     return { x: isoX, y: isoY }
   }
 
   convertIsometricToScreen(x, y) {
-    var screenX = ((x - y) * this.tile.width) / 2 + this.position.x
-    var screenY = ((x + y) * this.tile.height) / 2 + this.position.y
+    const screenX = ((x - y) * this.tile.width) / 2 + this.position.x
+    const screenY = ((x + y) * this.tile.height) / 2 + this.position.y
 
     return { x: screenX, y: screenY }
   }
 
   getMousePosition(event) {
-    var canvas = event.target
-    var rect = canvas.getBoundingClientRect()
+    const canvas = event.target
+    const rect = canvas.getBoundingClientRect()
 
     return {
       x: event.clientX - rect.left,
