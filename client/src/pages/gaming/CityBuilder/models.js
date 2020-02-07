@@ -1,30 +1,40 @@
 export class IsoMap {
-  constructor({ elementId, screen, map, tile, color = '#15B89A' }) {
+  constructor({
+    elementId,
+    map,
+    screen = { offset: 0 },
+    tile,
+    color = '#15B89A',
+  }) {
     this.elementId = elementId
-    this.screen = screen
     this.map = map
+    this.screen = screen
     this.tile = tile
     this.color = color
     this.canvas = null
     this.ctx = null
-    this.position = {}
   }
   create() {
-    this.position = { x: this.screen.width / 2, y: this.tile.height * 3 }
+    const { rows, columns } = this.map
+    const { offset } = this.screen
     this.canvas = document.getElementById(this.elementId)
     this.ctx = this.canvas.getContext('2d')
 
-    this.canvas.setAttribute('width', this.screen.width)
-    this.canvas.setAttribute('height', this.screen.height)
+    const width = this.tile.width * rows
+    const height = this.tile.height * columns
 
-    let x, y
-    for (let i = 0; i < this.map.width; i++) {
-      for (let j = 0; j < this.map.height; j++) {
-        // calculate coordinates
-        x = ((i - j) * this.tile.width) / 2 + this.position.x
-        y = ((i + j) * this.tile.height) / 2 + this.position.y
-        // draw single tile
-        this.drawTile(x, y)
+    this.canvas.setAttribute('width', width + offset * 2)
+    this.canvas.setAttribute('height', height + offset * 2)
+
+    let i, j
+    for (i = 0; i < rows; i++) {
+      for (j = 0; j < columns; j++) {
+        this.drawShape({ x: i, y: j }, Rect, {
+          w: 1,
+          h: 1,
+          axis: 'z',
+          color: 'blue',
+        })
       }
     }
   }
@@ -39,6 +49,8 @@ export class IsoMap {
         mousePosition.x,
         mousePosition.y
       )
+
+      console.log(isometricPosition)
 
       if (this.isOnMap(isometricPosition, this.map)) {
         const { x, y, z } = b
@@ -89,6 +101,7 @@ export class IsoMap {
           mousePosition.x,
           mousePosition.y
         )
+        console.log(isometricPosition)
 
         if (this.isOnMap(isometricPosition, this.map)) {
           const { x, y, z } = this.selectedBuilding
@@ -100,20 +113,24 @@ export class IsoMap {
   }
 
   convertScreenToIsometric(x, y) {
-    x = (x - this.position.x) / this.tile.width
-    y = (y - this.position.y) / this.tile.height
-
-    const isoX = Math.floor(y + x)
-    const isoY = Math.floor(y - x)
-
-    return { x: isoX, y: isoY }
+    const { width, height } = this.tile
+    const { offset } = this.screen
+    return {
+      x: Math.round((x - offset) / width),
+      y: Math.round((y - offset) / height),
+    }
   }
 
   convertIsometricToScreen(x, y) {
-    const screenX = ((x - y) * this.tile.width) / 2 + this.position.x
-    const screenY = ((x + y) * this.tile.height) / 2 + this.position.y
+    const { width, height } = this.tile
+    const { offset } = this.screen
+    const x0 = width / 2 + offset
+    const y0 = height / 2 + (height * this.map.rows) / 2 + offset
 
-    return { x: screenX, y: screenY }
+    return {
+      x: x0 + (x * width) / 2 + (y * width) / 2,
+      y: y0 - (x * height) / 2 + (y * height) / 2,
+    }
   }
 
   getMousePosition(event) {
@@ -139,70 +156,64 @@ export class IsoMap {
     }
   }
 
-  drawBuilding(isometricPosition, x, y, z) {
+  drawShape(isometricPosition, ShapeClass, data) {
     const point = this.convertIsometricToScreen(
       isometricPosition.x,
       isometricPosition.y
     )
-    this.drawCube(point, x, y, z)
+    const s = new ShapeClass(this.ctx, this.tile, point)
+    s.draw(data)
   }
+}
 
-  drawCube(point, x, y, z) {
-    this.drawRect(point, x, y, 'x', 'red')
-    this.drawRect(point, z, y, 'y', 'blue')
-    const topSidePoint = {
-      x: point.x,
-      y: point.y - y * this.tile.height,
-    }
-    this.drawRect(topSidePoint, z, x, 'z', 'green')
+class Shape {
+  constructor(ctx, tile, point) {
+    this.ctx = ctx
+    this.tile = tile
+    this.point = point
   }
+  draw() {}
+}
 
-  drawRect(point, w, h, axis, color) {
-    const { x, y } = point
+export class Rect extends Shape {
+  draw({ w, h, axis, color = 'black' }) {
+    const { x, y } = this.point
+
     let p1, p2, p3, p4
-    const { width: tWidth, height: tHeight } = this.tile
-    let isoWidth, isoHeight
+    const { width, height } = this.tile
+    p1 = { x, y }
     if (axis === 'x') {
-      isoWidth = tWidth / 2
-      isoHeight = tHeight
-      p1 = { x: x - isoWidth, y: y + isoHeight }
-      p2 = { x: x - isoWidth, y: y + isoHeight - isoHeight * h }
+      p2 = { x: x, y: y - height * h }
       p3 = {
-        x: x - isoWidth + isoWidth * w,
-        y: y + isoHeight - isoHeight * h - (isoHeight * w) / 2,
+        x: x + (width * w) / 2,
+        y: y - height * h - (height * w) / 2,
       }
       p4 = {
-        x: x - isoWidth + isoWidth * w,
-        y: y + isoHeight - (isoHeight * w) / 2,
+        x: x + (width * w) / 2,
+        y: y - (height * w) / 2,
       }
     } else if (axis === 'y') {
-      isoWidth = tWidth / 2
-      isoHeight = tHeight
-      p1 = { x: x - isoWidth, y: y + isoHeight }
-      p2 = { x: x - isoWidth, y: y + isoHeight - isoHeight * h }
+      p2 = { x: x, y: y - height * h }
       p3 = {
-        x: x - isoWidth + isoWidth * w * -1,
-        y: y + isoHeight - isoHeight * h - (isoHeight * w) / 2,
+        x: x - (width * w) / 2,
+        y: y - height * h - (height * w) / 2,
       }
       p4 = {
-        x: x - isoWidth + isoWidth * w * -1,
-        y: y + isoHeight - (isoHeight * w) / 2,
+        x: x - (width * w) / 2,
+        y: y - (height * w) / 2,
       }
     } else {
-      isoWidth = tWidth
-      isoHeight = tHeight
-      p1 = { x: x - isoWidth / 2, y: y + isoHeight }
       p2 = {
-        x: x - isoWidth / 2 - (isoWidth * w) / 2,
-        y: y + isoHeight - (isoHeight * w) / 2,
+        x: x - (width * w) / 2,
+        y: y - (height * w) / 2,
       }
       p3 = {
-        x: x - isoWidth / 2 - (isoWidth * w) / 2 + (isoWidth * h) / 2,
-        y: y + isoHeight - (isoHeight * h) / 2 - (isoHeight * w) / 2,
+        x: x - (width * w) / 2 + (width * h) / 2,
+        y: y - (height * h) / 2 - (height * w) / 2,
       }
       p4 = {
-        x: x - isoWidth / 2 + (isoWidth * h) / 2,
-        y: y + isoHeight - (isoHeight * h) / 2,
+        x: x + (width * h) / 2,
+        y: y - (height * h) / 2,
       }
     }
 
@@ -216,5 +227,19 @@ export class IsoMap {
 
     this.ctx.fillStyle = color
     this.ctx.fill()
+  }
+}
+
+export class Cube extends Shape {
+  draw({ x, y, z, color = 'black' }) {
+    const rect = new Rect(this.ctx, this.tile, this.point)
+    rect.draw({ w: x, h: y, axis: 'x', color })
+    rect.draw({ w: z, h: y, axis: 'y', color })
+    // Modify the point to render for the topside rect
+    rect.point = {
+      x: rect.point.x,
+      y: rect.point.y - y * this.tile.height,
+    }
+    rect.draw({ w: z, h: x, axis: 'z', color })
   }
 }

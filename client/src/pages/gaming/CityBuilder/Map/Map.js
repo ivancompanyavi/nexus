@@ -6,8 +6,7 @@ import styles from './Map.module.css'
 
 const params = {
   elementId: 'canvas',
-  screen: { width: 800, height: 450 },
-  map: { width: 14, height: 14 },
+  map: { rows: 3, columns: 3 },
   tile: { width: 50, height: 25 },
 }
 
