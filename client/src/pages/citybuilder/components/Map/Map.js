@@ -6,9 +6,9 @@ import styles from './Map.module.css'
 
 const params = {
   elementId: 'canvas',
-  rows: 100,
-  columns: 100,
-  tile: { width: 10, height: 5 },
+  rows: 50,
+  columns: 50,
+  tile: { width: 20, height: 10 },
 }
 
 export default ({ selectedBuilding }) => {

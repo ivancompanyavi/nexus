@@ -25,7 +25,7 @@ const buildings = [
   },
   {
     title: 'hospital',
-    position: { x: 1, y: 7 },
+    position: { x: 1, y: 5 },
     x: 14,
     y: 11,
     z: 6,

@@ -2,14 +2,7 @@ import Rect from './rect'
 import Building from './building'
 
 export default class IsoMap {
-  constructor({
-    elementId,
-    rows,
-    columns,
-    offset = 0,
-    tile,
-    color = '#15B89A',
-  }) {
+  constructor({ elementId, rows, columns, offset = 0, tile, color = '#15B89A' }) {
     this.elementId = elementId
     this.rows = rows
     this.columns = columns
@@ -53,13 +46,10 @@ export default class IsoMap {
     }
     this.buildingListener = event => {
       var mousePosition = this.getMousePosition(event)
-      var isometricPosition = this.cartesianToIsometric(
-        mousePosition.x,
-        mousePosition.y
-      )
+      var isometricPosition = this.cartesianToIsometric(mousePosition.x, mousePosition.y)
       if (isometricPosition) {
-        const { x, y, z, color } = b
-        this.drawShape(isometricPosition, Building, { x, y, z, color })
+        const { x, y, z, color, shape } = b
+        this.drawShape(isometricPosition, shape, { x, y, z, color })
       }
     }
     this.canvas.addEventListener('mousedown', this.buildingListener, false)
@@ -70,10 +60,7 @@ export default class IsoMap {
       'mousedown',
       event => {
         var mousePosition = this.getMousePosition(event)
-        var isometricPosition = this.cartesianToIsometric(
-          mousePosition.x,
-          mousePosition.y
-        )
+        var isometricPosition = this.cartesianToIsometric(mousePosition.x, mousePosition.y)
 
         if (isometricPosition) {
           const { x, y, z } = this.selectedBuilding
@@ -94,8 +81,7 @@ export default class IsoMap {
         yi = tile.points[i].y
         xj = tile.points[j].x
         yj = tile.points[j].y
-        let intersect =
-          yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi
+        let intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi
         if (intersect) inside = !inside
       }
       if (inside) {
@@ -128,10 +114,7 @@ export default class IsoMap {
   }
 
   drawShape(isometricPosition, ShapeClass, data) {
-    const point = this.isometricToCartesian(
-      isometricPosition.x,
-      isometricPosition.y
-    )
+    const point = this.isometricToCartesian(isometricPosition.x, isometricPosition.y)
     const s = new ShapeClass(this.ctx, this.tile, point)
     const coords = s.draw(data)
     return coords
