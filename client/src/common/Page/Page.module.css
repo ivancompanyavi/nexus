@@ -1,11 +1,4 @@
 .page {
-  grid-area: page-content;
+  grid-area: content;
   opacity: 0;
-  display: grid;
-  height: 100vh;
-  width: 100vw;
-  grid-template-areas:
-    'page-menu'
-    'page-content';
-  grid-template-rows: 50px 50px 1fr;
 }

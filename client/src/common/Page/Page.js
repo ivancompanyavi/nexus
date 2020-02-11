@@ -24,9 +24,6 @@ export default ({ title, children, className }) => (
       opacity: 0,
     }}
   >
-    <Link to="/" className={styles.title}>
-      {title}
-    </Link>
     {children}
   </motion.section>
 )

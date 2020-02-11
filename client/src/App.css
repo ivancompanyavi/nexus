@@ -9,9 +9,11 @@
 }
 
 #root {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  display: grid;
+  grid-template-areas:
+    'menu'
+    'content';
+  grid-template-rows: 10vh 90vh;
 }
 
 html,

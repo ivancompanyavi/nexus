@@ -1,5 +1,5 @@
 .menu {
-  grid-area: page-menu;
+  grid-area: menu;
   display: flex;
   flex-direction: column;
 }

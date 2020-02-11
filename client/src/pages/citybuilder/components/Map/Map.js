@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 
-import { IsoMap } from '../models'
+import { IsoMap } from '../../models'
 
 import styles from './Map.module.css'
 
 const params = {
   elementId: 'canvas',
-  map: { rows: 3, columns: 3 },
-  tile: { width: 50, height: 25 },
+  rows: 100,
+  columns: 100,
+  tile: { width: 10, height: 5 },
 }
 
 export default ({ selectedBuilding }) => {

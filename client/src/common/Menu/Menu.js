@@ -16,6 +16,9 @@ export default () => {
           <li>
             <Link to="/gaming">Gaming</Link>
           </li>
+          <li>
+            <Link to="/citybuilder">City builder</Link>
+          </li>
         </ul>
       </nav>
     </div>

@@ -5,7 +5,7 @@ import { createBrowserHistory } from 'history'
 import { AnimatePresence } from 'framer-motion'
 
 import { Menu } from './common'
-import { Blog, Gaming, Main } from './pages'
+import { Blog, Gaming, Main, CityBuilder } from './pages'
 
 import client from './client'
 
@@ -22,7 +22,8 @@ function App() {
           <Switch>
             <Route exact path="/" component={Main} />
             <Route path="/gaming" component={Gaming} />
-            <Route path="/blog" component={Blog} />) }} >
+            <Route path="/blog" component={Blog} />) />
+            <Route path="/citybuilder" component={CityBuilder} />) />
           </Switch>
         </AnimatePresence>
       </Router>

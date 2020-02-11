@@ -1,5 +1,7 @@
 .buildingSelector {
   grid-area: building-selector;
+  max-height: 90vh;
+  overflow: auto;
 }
 
 .building {
@@ -8,4 +10,8 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+}
+
+.selected {
+  border: 1px solid red;
 }
