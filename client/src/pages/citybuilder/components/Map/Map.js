@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { IsoMap } from '../../models'
+import { Map } from '../../models'
 
 import styles from './Map.module.css'
 
@@ -14,7 +14,7 @@ const params = {
 export default ({ selectedBuilding }) => {
   const [map, setMap] = useState(null)
   useEffect(() => {
-    const m = new IsoMap({ ...params })
+    const m = new Map({ ...params })
     setMap(m)
     m.create()
   }, [])

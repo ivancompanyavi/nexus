@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { IsoMap, Building, Hospital } from '../../models'
+import { Map, Hospital, Cube, Police, FireStation } from '../../models'
 
 import styles from './BuildingSelector.module.css'
 
@@ -16,30 +16,28 @@ const buildings = [
   {
     title: 'house',
     position: { x: 1, y: 2 },
-    x: 2,
-    y: 2,
-    z: 2,
-    color: 'green',
-    windows: 1,
-    shape: Building,
+    data: {
+      w: 2,
+      h: 2,
+      d: 2,
+      color: '#00FF00',
+    },
+    shape: Cube,
   },
   {
     title: 'hospital',
     position: { x: 1, y: 5 },
-    x: 14,
-    y: 11,
-    z: 6,
-    color: 'blue',
     shape: Hospital,
   },
   {
     title: 'police',
-    position: { x: 0, y: 2 },
-    x: 4,
-    y: 2,
-    z: 2,
-    color: 'red',
-    shape: Building,
+    position: { x: 3, y: 6 },
+    shape: Police,
+  },
+  {
+    title: 'Fire station',
+    position: { x: 3, y: 6 },
+    shape: FireStation,
   },
 ]
 
@@ -47,15 +45,9 @@ export default ({ onBuildingSelect }) => {
   const [selected, setSelected] = useState(null)
   useEffect(() => {
     buildings.forEach(b => {
-      const isoMap = new IsoMap({ ...params, elementId: b.title })
-      isoMap.create()
-      isoMap.drawShape(b.position, b.shape, {
-        x: b.x,
-        y: b.y,
-        z: b.z,
-        color: b.color,
-        windows: b.windows,
-      })
+      const map = new Map({ ...params, elementId: b.title })
+      map.create()
+      map.drawShape(b.position, b.shape, b.data)
     })
   }, [])
 

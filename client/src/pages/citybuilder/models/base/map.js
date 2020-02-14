@@ -1,7 +1,8 @@
 import Rect from './rect'
-import Building from './building'
+import { STATES } from './shape'
+import Point from './point'
 
-export default class IsoMap {
+export default class Map {
   constructor({ elementId, rows, columns, offset = 0, tile, color = '#15B89A' }) {
     this.elementId = elementId
     this.rows = rows
@@ -12,6 +13,7 @@ export default class IsoMap {
     this.canvas = null
     this.ctx = null
     this.map = []
+    this.shapes = []
   }
   create() {
     this.canvas = document.getElementById(this.elementId)
@@ -48,27 +50,26 @@ export default class IsoMap {
       var mousePosition = this.getMousePosition(event)
       var isometricPosition = this.cartesianToIsometric(mousePosition.x, mousePosition.y)
       if (isometricPosition) {
-        const { x, y, z, color, shape } = b
-        this.drawShape(isometricPosition, shape, { x, y, z, color })
+        const { shape } = b
+        this.drawShape(isometricPosition, shape, b.data)
+        this.shapes.push({
+          shape,
+          point: isometricPosition,
+          data: b.data,
+        })
+      }
+    }
+    this.buildingDraggingListener = event => {
+      var mousePosition = this.getMousePosition(event)
+      var isometricPosition = this.cartesianToIsometric(mousePosition.x, mousePosition.y)
+      if (isometricPosition) {
+        const { shape, data } = b
+        this.repaint()
+        this.drawShape(isometricPosition, shape, data, STATES.DRAGGING)
       }
     }
     this.canvas.addEventListener('mousedown', this.buildingListener, false)
-  }
-
-  addListeners() {
-    this.canvas.addEventListener(
-      'mousedown',
-      event => {
-        var mousePosition = this.getMousePosition(event)
-        var isometricPosition = this.cartesianToIsometric(mousePosition.x, mousePosition.y)
-
-        if (isometricPosition) {
-          const { x, y, z } = this.selectedBuilding
-          this.drawShape(isometricPosition, x, y, z)
-        }
-      },
-      false
-    )
+    this.canvas.addEventListener('mousemove', this.buildingDraggingListener, false)
   }
 
   cartesianToIsometric(x, y) {
@@ -96,27 +97,29 @@ export default class IsoMap {
     const { width, height } = this.tile
     const x0 = width / 2 + this.offset
     const y0 = height / 2 + (height * this.rows) / 2 + this.offset
-
-    return {
-      x: x0 + (x * width) / 2 + (y * width) / 2,
-      y: y0 - (x * height) / 2 + (y * height) / 2,
-    }
+    return new Point(
+      x0 + (x * width) / 2 + (y * width) / 2,
+      y0 - (x * height) / 2 + (y * height) / 2
+    )
   }
 
-  getMousePosition(event) {
-    const canvas = event.target
+  getMousePosition(evt) {
+    const canvas = evt.target
     const rect = canvas.getBoundingClientRect()
-
-    return {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-    }
+    return new Point(evt.clientX - rect.left, evt.clientY - rect.top)
   }
 
-  drawShape(isometricPosition, ShapeClass, data) {
+  drawShape(isometricPosition, ShapeClass, data, state = STATES.DEFAULT) {
     const point = this.isometricToCartesian(isometricPosition.x, isometricPosition.y)
-    const s = new ShapeClass(this.ctx, this.tile, point)
+    const s = new ShapeClass(this.ctx, this.tile, point, state)
     const coords = s.draw(data)
     return coords
+  }
+
+  repaint() {
+    this.create()
+    this.shapes.forEach(s => {
+      this.drawShape(s.point, s.shape, s.data)
+    })
   }
 }
