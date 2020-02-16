@@ -1,4 +1,5 @@
 import { Shape, Rect, Cube, Point, Dimension3D, Dimension2D } from '../base'
+import { Termometer } from '../misc'
 
 export default class Hospital extends Shape {
   draw() {
@@ -71,6 +72,7 @@ export default class Hospital extends Shape {
     const { width, height } = this.tile
     const cube = new Cube(this.ctx, this.tile, this.point)
     const rect = new Rect(this.ctx, this.tile, this.point)
+    const termometer = new Termometer(this.ctx, this.tile, this.point)
     const point = new Point(this.point.x + (7 * width) / 2, this.point.y - (3 * height) / 2)
     // Walls
     tempPoint = cube.draw({ ...new Dimension3D(9, 7, 7), color: this.getColor('#B9B5AC'), point })
@@ -89,6 +91,7 @@ export default class Hospital extends Shape {
       color: this.getColor('#81645E'),
       point: tempPoint[2][0],
     })
+    tempPoint = termometer.draw({ percentage: 0.5, point: tempPoint[2][0] })
     // Door
     rect.draw({
       ...new Dimension2D(3, 3),
