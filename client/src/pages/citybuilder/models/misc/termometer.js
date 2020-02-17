@@ -33,7 +33,6 @@ export default class Termometer extends Shape {
   draw({ percentage = 0, point = this.point }) {
     const cube = new Cube(this.ctx, this.tile, this.point)
     const color = Termometer.calculateColor(percentage)
-    console.log(color)
     cube.draw({ ...new Dimension3D(1, 4, 1), color, point })
   }
 }

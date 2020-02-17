@@ -45,6 +45,7 @@ export default class Map {
   selectBuilding(b) {
     if (this.buildingListener) {
       this.canvas.removeEventListener('mousedown', this.buildingListener)
+      this.canvas.removeEventListener('mousemove', this.buildingDraggingListener)
     }
     this.buildingListener = event => {
       var mousePosition = this.getMousePosition(event)
@@ -82,7 +83,7 @@ export default class Map {
         yi = tile.points[i].y
         xj = tile.points[j].x
         yj = tile.points[j].y
-        let intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi
+        let intersect = (yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi
         if (intersect) inside = !inside
       }
       if (inside) {

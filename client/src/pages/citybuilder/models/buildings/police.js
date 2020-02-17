@@ -6,18 +6,17 @@ export default class Police extends Shape {
   }
 
   _drawBlock() {
-    let tempPoint
     const point = new Point(this.point.x, this.point.y)
     const cube = new Cube(this.ctx, this.tile, this.point)
     const rect = new Rect(this.ctx, this.tile, this.point)
     // Walls
-    tempPoint = cube.draw({ ...new Dimension3D(10, 5, 7), color: this.getColor('#D7DADB'), point })
+    let tempPoint = cube.draw({ ...new Dimension3D(10, 5, 7), color: this.getColor('#D7DADB'), point })
     tempPoint = cube.draw({
       ...new Dimension3D(10, 1, 7),
       color: this.getColor('#5A90C6'),
       point: tempPoint[2][0],
     })
-    tempPoint = cube.draw({
+    cube.draw({
       ...new Dimension3D(10, 1, 7),
       color: this.getColor('#D7DADB'),
       point: tempPoint[2][0],

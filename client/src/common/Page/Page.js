@@ -1,8 +1,5 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
-
-import Menu from '../Menu'
 
 import styles from './Page.module.css'
 
@@ -12,7 +9,7 @@ const spring = {
   stiffness: 100,
 }
 
-export default ({ title, children, className }) => (
+export default ({ children, className }) => (
   <motion.section
     layoutTransition={spring}
     key={window.location.pathname}

@@ -24,7 +24,7 @@ export default class Hospital extends Shape {
       color: this.getColor('#FFFFFF'),
       point: tempPoint[2][0],
     })
-    tempPoint = cube.draw({
+    cube.draw({
       ...new Dimension3D(5, 4, 5),
       color: this.getColor('#81645E'),
       point: tempPoint[2][0],
@@ -91,7 +91,7 @@ export default class Hospital extends Shape {
       color: this.getColor('#81645E'),
       point: tempPoint[2][0],
     })
-    tempPoint = termometer.draw({ percentage: 0.5, point: tempPoint[2][0] })
+    termometer.draw({ percentage: 0.5, point: tempPoint[2][0] })
     // Door
     rect.draw({
       ...new Dimension2D(3, 3),

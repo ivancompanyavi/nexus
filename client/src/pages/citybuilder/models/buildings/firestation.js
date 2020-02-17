@@ -8,13 +8,12 @@ export default class FireStation extends Shape {
   }
 
   _drawFirstBlock() {
-    let tempPoint
     const point = { x: this.point.x, y: this.point.y }
     const cube = new Cube(this.ctx, this.tile, this.point)
     const rect = new Rect(this.ctx, this.tile, this.point)
     // Walls
-    tempPoint = cube.draw({ w: 8, h: 6, d: 7, color: this.getColor('#D5251F'), point })
-    tempPoint = cube.draw({
+    let tempPoint = cube.draw({ w: 8, h: 6, d: 7, color: this.getColor('#D5251F'), point })
+    cube.draw({
       w: 8,
       h: 1,
       d: 7,

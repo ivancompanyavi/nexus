@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import { useObservable } from '../../../../common/hooks'
 
-import { Map, Hospital, Cube, Police, FireStation } from '../../models'
+import { Map } from '../../models'
+
+import { getBuildings$ } from '../../actions'
 
 import styles from './BuildingSelector.module.css'
 
@@ -12,44 +15,19 @@ const params = {
   tile: { width: 10, height: 5 },
 }
 
-const buildings = [
-  {
-    title: 'house',
-    position: { x: 1, y: 2 },
-    data: {
-      w: 2,
-      h: 2,
-      d: 2,
-      color: '#00FF00',
-    },
-    shape: Cube,
-  },
-  {
-    title: 'hospital',
-    position: { x: 1, y: 5 },
-    shape: Hospital,
-  },
-  {
-    title: 'police',
-    position: { x: 3, y: 6 },
-    shape: Police,
-  },
-  {
-    title: 'Fire station',
-    position: { x: 3, y: 6 },
-    shape: FireStation,
-  },
-]
 
 export default ({ onBuildingSelect }) => {
   const [selected, setSelected] = useState(null)
+
+  const buildings$ = getBuildings$()
+  const buildings = useObservable(buildings$, [])
   useEffect(() => {
     buildings.forEach(b => {
       const map = new Map({ ...params, elementId: b.title })
       map.create()
       map.drawShape(b.position, b.shape, b.data)
     })
-  }, [])
+  }, [buildings])
 
   const selectBuilding = b => {
     onBuildingSelect(b)
