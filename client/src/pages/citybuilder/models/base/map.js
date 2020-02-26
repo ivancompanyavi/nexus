@@ -52,11 +52,12 @@ export default class Map {
       var isometricPosition = this.cartesianToIsometric(mousePosition.x, mousePosition.y)
       if (isometricPosition) {
         const { shape } = b
-        this.drawShape(isometricPosition, shape, b.data)
+        this.drawShape(isometricPosition, shape, b.data, b.pct)
         this.shapes.push({
           shape,
           point: isometricPosition,
           data: b.data,
+          pct: b.pct,
         })
       }
     }
@@ -66,7 +67,7 @@ export default class Map {
       if (isometricPosition) {
         const { shape, data } = b
         this.repaint()
-        this.drawShape(isometricPosition, shape, data, STATES.DRAGGING)
+        this.drawShape(isometricPosition, shape, data, null, STATES.DRAGGING)
       }
     }
     this.canvas.addEventListener('mousedown', this.buildingListener, false)
@@ -83,7 +84,7 @@ export default class Map {
         yi = tile.points[i].y
         xj = tile.points[j].x
         yj = tile.points[j].y
-        let intersect = (yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi
+        let intersect = yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi
         if (intersect) inside = !inside
       }
       if (inside) {
@@ -110,9 +111,10 @@ export default class Map {
     return new Point(evt.clientX - rect.left, evt.clientY - rect.top)
   }
 
-  drawShape(isometricPosition, ShapeClass, data, state = STATES.DEFAULT) {
+  drawShape(isometricPosition, ShapeClass, data, pct = 1.0, state = STATES.DEFAULT) {
+    const { ctx, tile } = this
     const point = this.isometricToCartesian(isometricPosition.x, isometricPosition.y)
-    const s = new ShapeClass(this.ctx, this.tile, point, state)
+    const s = new ShapeClass({ ctx, tile, point, state, pct })
     const coords = s.draw(data)
     return coords
   }
@@ -120,7 +122,7 @@ export default class Map {
   repaint() {
     this.create()
     this.shapes.forEach(s => {
-      this.drawShape(s.point, s.shape, s.data)
+      this.drawShape(s.point, s.shape, s.data, s.pct)
     })
   }
 }

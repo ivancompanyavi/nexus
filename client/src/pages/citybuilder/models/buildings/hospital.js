@@ -1,7 +1,8 @@
-import { Shape, Rect, Cube, Point, Dimension3D, Dimension2D } from '../base'
-import { Termometer } from '../misc'
+import { Rect, Cube, Point, Dimension3D, Dimension2D } from '../base'
 
-export default class Hospital extends Shape {
+import Building from './building'
+
+export default class Hospital extends Building {
   draw() {
     this._drawSecondBlock()
     this._drawFirstBlock()
@@ -9,14 +10,19 @@ export default class Hospital extends Shape {
 
   _drawFirstBlock() {
     let tempPoint
+    const { ctx, tile, point: p } = this
     const point = new Point(this.point.x, this.point.y)
-    const cube = new Cube(this.ctx, this.tile, this.point)
-    const rect = new Rect(this.ctx, this.tile, this.point)
+    const cube = new Cube({ ctx, tile, point: p })
+    const rect = new Rect({ ctx, tile, point: p })
     // Walls
-    tempPoint = cube.draw({ ...new Dimension3D(5, 7, 5), color: this.getColor('#B9B5AC'), point })
+    tempPoint = cube.draw({
+      ...new Dimension3D(5, 7, 5),
+      color: this.getColor('#B9B5AC', true),
+      point,
+    })
     tempPoint = cube.draw({
       ...new Dimension3D(5, 1, 5),
-      color: this.getColor('#81645E'),
+      color: this.getColor('#81645E', true),
       point: tempPoint[2][0],
     })
     tempPoint = cube.draw({
@@ -26,7 +32,7 @@ export default class Hospital extends Shape {
     })
     cube.draw({
       ...new Dimension3D(5, 4, 5),
-      color: this.getColor('#81645E'),
+      color: this.getColor('#81645E', true),
       point: tempPoint[2][0],
     })
 
@@ -69,16 +75,20 @@ export default class Hospital extends Shape {
 
   _drawSecondBlock() {
     let tempPoint
-    const { width, height } = this.tile
-    const cube = new Cube(this.ctx, this.tile, this.point)
-    const rect = new Rect(this.ctx, this.tile, this.point)
-    const termometer = new Termometer(this.ctx, this.tile, this.point)
-    const point = new Point(this.point.x + (7 * width) / 2, this.point.y - (3 * height) / 2)
+    const { ctx, tile, point } = this
+    const { width, height } = tile
+    const cube = new Cube({ ctx, tile, point })
+    const rect = new Rect({ ctx, tile, point })
+    const firstPoint = new Point(point.x + (7 * width) / 2, point.y - (3 * height) / 2)
     // Walls
-    tempPoint = cube.draw({ ...new Dimension3D(9, 7, 7), color: this.getColor('#B9B5AC'), point })
+    tempPoint = cube.draw({
+      ...new Dimension3D(9, 7, 7),
+      color: this.getColor('#B9B5AC', true),
+      point: firstPoint,
+    })
     tempPoint = cube.draw({
       ...new Dimension3D(9, 1, 7),
-      color: this.getColor('#81645E'),
+      color: this.getColor('#81645E', true),
       point: tempPoint[2][0],
     })
     tempPoint = cube.draw({
@@ -88,16 +98,15 @@ export default class Hospital extends Shape {
     })
     tempPoint = cube.draw({
       ...new Dimension3D(9, 4, 7),
-      color: this.getColor('#81645E'),
+      color: this.getColor('#81645E', true),
       point: tempPoint[2][0],
     })
-    termometer.draw({ percentage: 0.5, point: tempPoint[2][0] })
     // Door
     rect.draw({
       ...new Dimension2D(3, 3),
       axis: 'x',
       color: this.getColor('blue'),
-      point,
+      point: firstPoint,
       coords: new Point(3, 0),
     })
     // Windows
@@ -114,7 +123,7 @@ export default class Hospital extends Shape {
         ...new Dimension2D(1, 2),
         axis: 'x',
         color: this.getColor('#FFFFFF'),
-        point,
+        point: firstPoint,
         coords: w,
       })
     })

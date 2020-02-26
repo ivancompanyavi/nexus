@@ -1,16 +1,22 @@
-import { Shape, Rect, Cube, Point, Dimension3D, Dimension2D } from '../base'
+import { Rect, Cube, Dimension3D, Dimension2D } from '../base'
 
-export default class Police extends Shape {
+import Building from './building'
+
+export default class Police extends Building {
   draw() {
     this._drawBlock()
   }
 
   _drawBlock() {
-    const point = new Point(this.point.x, this.point.y)
-    const cube = new Cube(this.ctx, this.tile, this.point)
-    const rect = new Rect(this.ctx, this.tile, this.point)
+    const { ctx, tile, point } = this
+    const cube = new Cube({ ctx, tile, point })
+    const rect = new Rect({ ctx, tile, point })
     // Walls
-    let tempPoint = cube.draw({ ...new Dimension3D(10, 5, 7), color: this.getColor('#D7DADB'), point })
+    let tempPoint = cube.draw({
+      ...new Dimension3D(10, 5, 7),
+      color: this.getColor('#D7DADB'),
+      point,
+    })
     tempPoint = cube.draw({
       ...new Dimension3D(10, 1, 7),
       color: this.getColor('#5A90C6'),

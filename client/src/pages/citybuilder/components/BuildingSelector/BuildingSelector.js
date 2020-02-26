@@ -15,7 +15,6 @@ const params = {
   tile: { width: 10, height: 5 },
 }
 
-
 export default ({ onBuildingSelect }) => {
   const [selected, setSelected] = useState(null)
 
@@ -25,7 +24,7 @@ export default ({ onBuildingSelect }) => {
     buildings.forEach(b => {
       const map = new Map({ ...params, elementId: b.title })
       map.create()
-      map.drawShape(b.position, b.shape, b.data)
+      map.drawShape(b.position, b.shape, null, b.pct)
     })
   }, [buildings])
 

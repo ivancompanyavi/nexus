@@ -4,13 +4,14 @@ import { Dimension2D } from './dimension'
 
 export default class Cube extends Shape {
   draw({ w, h, d, color = '#000000', point = this.point }) {
-    const rect = new Rect(this.ctx, this.tile, point)
+    const { ctx, tile } = this
+    const rect = new Rect({ ctx, tile, point })
     const side1 = rect.draw({ ...new Dimension2D(w, h), axis: 'x', color: this.getColor(color) })
     const side2 = rect.draw({ ...new Dimension2D(d, h), axis: 'y', color: this.getColor(color) })
     // Modify the point to render for the topside rect
     rect.point = {
       x: rect.point.x,
-      y: rect.point.y - h * this.tile.height,
+      y: rect.point.y - h * tile.height,
     }
     const side3 = rect.draw({ ...new Dimension2D(d, w), axis: 'z', color: this.getColor(color) })
     return [side1, side2, side3]

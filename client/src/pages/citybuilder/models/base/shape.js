@@ -6,7 +6,10 @@ export const STATES = {
 }
 
 export default class Shape {
-  constructor(ctx, tile, point, state = STATES.DEFAULT) {
+  constructor({ ctx, tile, point, state = STATES.DEFAULT }) {
+    if (ctx === undefined) {
+      console.log('pete')
+    }
     this.ctx = ctx
     this.tile = tile
     this.point = point
