@@ -14,7 +14,7 @@ export default class Police extends Building {
     // Walls
     let tempPoint = cube.draw({
       ...new Dimension3D(10, 5, 7),
-      color: this.getColor('#D7DADB'),
+      color: this.getColor('#D7DADB', true),
       point,
     })
     tempPoint = cube.draw({

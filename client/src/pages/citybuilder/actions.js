@@ -12,6 +12,7 @@ const buildings = [
     title: 'police',
     position: { x: 3, y: 6 },
     shape: Police,
+    pct: 0.5,
   },
   {
     title: 'Fire station',

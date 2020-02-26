@@ -13,7 +13,7 @@ export default class FireStation extends Building {
     const cube = new Cube({ ctx, tile, point })
     const rect = new Rect({ ctx, tile, point })
     // Walls
-    let tempPoint = cube.draw({ w: 8, h: 6, d: 7, color: this.getColor('#D5251F'), point })
+    let tempPoint = cube.draw({ w: 8, h: 6, d: 7, color: this.getColor('#D5251F', true), point })
     cube.draw({
       w: 8,
       h: 1,
